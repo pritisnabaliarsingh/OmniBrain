@@ -1,4 +1,13 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+)
+
+logger = logging.getLogger(__name__)
 
 # Create FastAPI application
 app = FastAPI(
@@ -7,9 +16,15 @@ app = FastAPI(
     version="1.0.0"
 )
 
+logger.info("OmniBrain Backend API started")
+
+# Validation constants
+ALLOWED_TYPES = ["application/pdf"]
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 # Root endpoint
 @app.get("/")
 def root():
+    logger.info("Root endpoint accessed")
     return {
         "message": "Welcome to OmniBrain Backend API"
     }
@@ -17,17 +32,54 @@ def root():
 # Health endpoint
 @app.get("/health")
 def health():
+    logger.info("Health endpoint accessed")
     return {
         "status": "healthy",
         "message": "Backend is running successfully"
     }
 
-
 # Upload endpoint
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
+    # Validate file type
+    if file.content_type not in ALLOWED_TYPES:
+        logger.warning(
+            f"Invalid file type uploaded: {file.filename} ({file.content_type})"
+        )
+        raise HTTPException(
+            status_code=400,
+            detail="Only PDF files are allowed"
+        )
+
+    # Read the uploaded file
+    content = await file.read()
+
+    # Check if the file is empty
+    if len(content) == 0:
+        logger.warning(f"Empty file uploaded: {file.filename}")
+        raise HTTPException(
+            status_code=400,
+            detail="Uploaded file is empty."
+        )
+
+    # Validate file size
+    if len(content) > MAX_FILE_SIZE:
+        logger.warning(
+            f"Large file rejected: {file.filename}, Size: {len(content)} bytes"
+        )
+        raise HTTPException(
+            status_code=400,
+            detail="Uploaded file exceeds maximum allowed size of 10 MB."
+        )
+
+    # Log successful upload
+    logger.info(
+        f"File uploaded successfully: {file.filename}, Size: {len(content)} bytes"
+    )
+
     return {
         "filename": file.filename,
-        "content_type": file.content_type, 
+        "content_type": file.content_type,
+        "size": len(content),
         "message": "File uploaded successfully"
     }
