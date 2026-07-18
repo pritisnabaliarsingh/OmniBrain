@@ -1,5 +1,5 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-import logging
+from fastapi import FastAPI, UploadFile, File, HTTPException
+import logging                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 
 # Configure logging
 logging.basicConfig(
@@ -15,8 +15,9 @@ app = FastAPI(
     description="Backend API for OmniBrain Multi-Modal RAG Project",
     version="1.0.0"
 )
-
-logger.info("OmniBrain Backend API started")
+@app.on_event("startup")
+async def startup_event():
+   logger.info("🚀 OmniBrain Backend API started successfully.")
 
 # Validation constants
 ALLOWED_TYPES = ["application/pdf"]
