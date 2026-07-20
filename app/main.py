@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 import logging                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-
+import os 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -8,6 +8,8 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok = True)
 
 # Create FastAPI application
 app = FastAPI(
@@ -54,6 +56,9 @@ async def upload_file(file: UploadFile = File(...)):
 
     # Read the uploaded file
     content = await file.read()
+    file_path = os.path.join(UPLOAD_DIR,file.filename)
+    with open(file_path, "wb") as buffer:
+        buffer.write(content)
 
     # Check if the file is empty
     if len(content) == 0:
@@ -79,8 +84,11 @@ async def upload_file(file: UploadFile = File(...)):
     )
 
     return {
-        "filename": file.filename,
+        "filename":file.filename,
         "content_type": file.content_type,
-        "size": len(content),
-        "message": "File uploaded successfully"
+        "size" : len(content),
+        "stored_path": file_path,
+        "message": "File Uploaded Successfully and stored."
+        
     }
+    
