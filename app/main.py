@@ -99,24 +99,32 @@ async def upload_file(file: UploadFile = File(...)):
 @app.post("/ask")
 async def ask_question(request: AskRequest):
 
-    # Validate question
-    if not request.question.strip():
-        logger.warning("Empty question received.")
+    try:
+
+        if not request.question.strip():
+            logger.warning("Empty question received.")
+
+            raise HTTPException(
+                status_code=400,
+                detail="Question cannot be empty."
+            )
+
+        logger.info(f"Question received: {request.question}")
+
+        answer = "This is a sample response from OmniBrain."
+
+        return {
+            "question": request.question,
+            "answer": answer
+        }
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        logger.error(f"Unexpected Error: {str(e)}")
 
         raise HTTPException(
-            status_code=400,
-            detail="Question cannot be empty."
+            status_code=500,
+            detail="Internal Server Error"
         )
-
-    logger.info(f"Question received: {request.question}")
-
-    # Placeholder answer
-    answer = "This is a sample response from OmniBrain."
-
-    logger.info("Answer generated successfully.")
-
-    return {
-        "question": request.question,
-        "answer": answer
-    }
-    
