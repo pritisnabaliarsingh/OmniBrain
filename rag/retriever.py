@@ -12,13 +12,35 @@ def build_retriever(documents=None, k=2):
     docs = documents if documents else SAMPLE_DOCS
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     vectorstore = FAISS.from_texts(docs, embeddings)
-    return vectorstore.as_retriever(search_kwargs={"k": k})
+    return vectorstore, vectorstore.as_retriever(search_kwargs={"k": k})
+
+
+def retrieve_relevant_chunks(query, retriever):
+    """Basic retrieval - just returns matching text."""
+    if not query or query.strip() == "":
+        return []
+    results = retriever.invoke(query)
+    return [doc.page_content for doc in results]
+
+
+def retrieve_with_scores(query, vectorstore, k=2):
+    """Retrieval with similarity scores - lower score = closer match in FAISS."""
+    if not query or query.strip() == "":
+        return []
+    results = vectorstore.similarity_search_with_score(query, k=k)
+    return [(doc.page_content, score) for doc, score in results]
+
 
 if __name__ == "__main__":
-    retriever = build_retriever()
+    vectorstore, retriever = build_retriever()
     query = "What was the revenue growth?"
-    results = retriever.invoke(query)
+
     print(f"Query: {query}\n")
-    print("Top matching chunks:")
-    for i, doc in enumerate(results, 1):
-        print(f"{i}. {doc.page_content}")
+
+    print("Basic retrieval:")
+    for i, chunk in enumerate(retrieve_relevant_chunks(query, retriever), 1):
+        print(f"{i}. {chunk}")
+
+    print("\nWith similarity scores:")
+    for i, (chunk, score) in enumerate(retrieve_with_scores(query, vectorstore, k=2), 1):
+        print(f"{i}. (score: {score:.4f}) {chunk}")
