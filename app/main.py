@@ -1,4 +1,4 @@
-from fastApi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException
 import logging                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 import os 
 # Configure logging
