@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from pydantic import BaseModel
 import logging                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 import os 
 # Configure logging
@@ -17,6 +18,8 @@ app = FastAPI(
     description="Backend API for OmniBrain Multi-Modal RAG Project",
     version="1.0.0"
 )
+class AskRequest (BaseModel):
+    question: str
 @app.on_event("startup")
 async def startup_event():
    logger.info("🚀 OmniBrain Backend API started successfully.")
@@ -90,5 +93,30 @@ async def upload_file(file: UploadFile = File(...)):
         "stored_path": file_path,
         "message": "File Uploaded Successfully and stored."
         
+    }
+    
+  # Ask API
+@app.post("/ask")
+async def ask_question(request: AskRequest):
+
+    # Validate question
+    if not request.question.strip():
+        logger.warning("Empty question received.")
+
+        raise HTTPException(
+            status_code=400,
+            detail="Question cannot be empty."
+        )
+
+    logger.info(f"Question received: {request.question}")
+
+    # Placeholder answer
+    answer = "This is a sample response from OmniBrain."
+
+    logger.info("Answer generated successfully.")
+
+    return {
+        "question": request.question,
+        "answer": answer
     }
     
