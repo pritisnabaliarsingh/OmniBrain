@@ -50,17 +50,29 @@ def render_upload():
 
                 st.success("✅ PDF uploaded successfully!")
 
-                st.markdown("### Upload Details")
+                progress = st.progress(0)
+
+                status = st.empty()
+
+                import time
+
+                status.info("📤 Upload Complete")
+                progress.progress(25)
+                time.sleep(0.6)
+
+                status.info("📄 Processing PDF...")
+                progress.progress(50)
+                time.sleep(0.8)
+
+                status.info("📝 Extracting Text...")
+                progress.progress(75)
+                time.sleep(0.8)
+
+                status.success("🤖 Ready for Chat!")
+                progress.progress(100)
+
+                st.markdown("### 📄 Upload Details")
 
                 st.write(f"**Filename:** {data['filename']}")
                 st.write(f"**Content Type:** {data['content_type']}")
                 st.write(f"**Size:** {data['size']} bytes")
-
-            else:
-
-                try:
-                    error = response.json()
-                    st.error(error["detail"])
-
-                except Exception:
-                    st.error("❌ Upload failed.")
