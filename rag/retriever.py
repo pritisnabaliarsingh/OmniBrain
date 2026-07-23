@@ -8,17 +8,27 @@ SAMPLE_DOCS = [
     "The board approved a new investment strategy focusing on renewable energy projects.",
 ]
 
-def build_retriever(documents=None, k=2):
-    docs = documents if documents else SAMPLE_DOCS
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    vectorstore = FAISS.from_texts(docs, embeddings)
-    return vectorstore.as_retriever(search_kwargs={"k": k})
+_vectorstore_cache = None
+
+def get_vectorstore(documents=None):
+    global _vectorstore_cache
+    if _vectorstore_cache is None:
+        docs = documents if documents else SAMPLE_DOCS
+        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        _vectorstore_cache = FAISS.from_texts(docs, embeddings)
+    return _vectorstore_cache
+
+def get_retriever(search_type="similarity", k=2, documents=None):
+    vectorstore = get_vectorstore(documents)
+    return vectorstore.as_retriever(search_type=search_type, search_kwargs={"k": k})
 
 if __name__ == "__main__":
-    retriever = build_retriever()
     query = "What was the revenue growth?"
-    results = retriever.invoke(query)
-    print(f"Query: {query}\n")
-    print("Top matching chunks:")
-    for i, doc in enumerate(results, 1):
+    print("=== Similarity search ===")
+    retriever = get_retriever(search_type="similarity", k=2)
+    for i, doc in enumerate(retriever.invoke(query), 1):
+        print(f"{i}. {doc.page_content}")
+    print("\n=== MMR search (more diverse results) ===")
+    retriever_mmr = get_retriever(search_type="mmr", k=2)
+    for i, doc in enumerate(retriever_mmr.invoke(query), 1):
         print(f"{i}. {doc.page_content}")
