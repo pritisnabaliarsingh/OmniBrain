@@ -5,6 +5,8 @@ from utils.api import upload_pdf
 def render_upload():
     st.error("THIS IS MY UPLOAD PAGE")
     st.header("📄 Upload PDF")
+    if "uploading" not in st.session_state:
+        st.session_state.uploading = False
 
     uploaded_file = st.file_uploader(
         "Choose a PDF",
@@ -31,10 +33,15 @@ def render_upload():
 
         st.write("**Filename:**", uploaded_file.name)
 
-        if st.button(
+        upload_clicked = st.button(
             "Upload PDF",
-            use_container_width=True
-        ):
+            use_container_width=True,
+            disabled=st.session_state.uploading
+        )
+
+        if upload_clicked:
+
+            st.session_state.uploading = True
 
             with st.spinner("Uploading PDF..."):
 
@@ -49,6 +56,12 @@ def render_upload():
                 data = response.json()
 
                 st.success("✅ PDF uploaded successfully!")
+                st.session_state.current_document = {
+                    "filename": data["filename"],
+                    "content_type": data["content_type"],
+                    "size": data["size"],
+                    "status": "Ready for Chat ✅"
+                }
 
                 progress = st.progress(0)
 
@@ -76,3 +89,21 @@ def render_upload():
                 st.write(f"**Filename:** {data['filename']}")
                 st.write(f"**Content Type:** {data['content_type']}")
                 st.write(f"**Size:** {data['size']} bytes")
+
+    if "current_document" in st.session_state:
+
+            doc = st.session_state.current_document
+
+            st.markdown("---")
+            st.subheader("📄 Current Document")
+
+            st.write(f"**Filename:** {doc['filename']}")
+            st.write(f"**Type:** {doc['content_type']}")
+            st.write(f"**Size:** {doc['size']} bytes")
+
+            st.success(doc["status"])
+
+            if st.button("🗑️ Remove Current Document"):
+
+                del st.session_state.current_document
+                st.rerun()        
