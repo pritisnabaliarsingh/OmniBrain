@@ -1,6 +1,8 @@
 import streamlit as st
 
+
 def render_sidebar():
+
     st.sidebar.title("🧠 OmniBrain")
 
     st.sidebar.markdown("## Navigation")
@@ -21,12 +23,12 @@ def render_sidebar():
 
         st.sidebar.warning("📄 No document uploaded")
 
-
     st.sidebar.metric(
         "💬 Messages",
         len(st.session_state.get("messages", []))
     )
-        
+
+    st.sidebar.markdown("---")
 
     st.sidebar.radio(
         "Menu",
@@ -40,14 +42,42 @@ def render_sidebar():
     )
 
     st.sidebar.markdown("---")
-    st.sidebar.markdown("---")
 
     backend_status = "🟢 Online"
 
     st.sidebar.write(f"**Backend:** {backend_status}")
 
-    if st.sidebar.button("🗑 Clear Chat"):
+    st.sidebar.markdown("---")
+
+    st.sidebar.subheader("⚡ Quick Actions")
+
+    if st.sidebar.button("🗑 Remove Current Document"):
+
+        if "current_document" in st.session_state:
+
+            del st.session_state.current_document
+
+            st.sidebar.success("Document removed.")
+
+            st.rerun()
+
+    if st.sidebar.button("🧹 Clear Chat"):
+
         st.session_state.messages = []
 
+        st.sidebar.success("Chat cleared.")
+
     st.sidebar.markdown("---")
+
+    with st.sidebar.expander("ℹ️ About OmniBrain"):
+
+        st.write(
+            """
+OmniBrain is a Multi-Modal RAG platform that allows users to upload
+PDF documents and interact with them using AI-powered chat.
+            """
+        )
+
+    st.sidebar.markdown("---")
+
     st.sidebar.info("Week 1 Prototype")
