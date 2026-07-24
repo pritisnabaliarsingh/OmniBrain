@@ -1,25 +1,24 @@
-from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from retriever import get_retriever
 from prompt_templates import QA_PROMPT_V2
 
-# Free, local model — no API key needed
-generator = pipeline("text-generation", model="google/flan-t5-base")
+tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
+model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-base")
 
 def answer_question(query, k=2):
-    """
-    Full RAG pipeline: retrieve relevant chunks, build a prompt, generate an answer.
-    """
     retriever = get_retriever(search_type="similarity", k=k)
     docs = retriever.invoke(query)
     context = "\n".join([doc.page_content for doc in docs])
 
     prompt = QA_PROMPT_V2.format(context=context, question=query)
-    result = generator(prompt, max_new_tokens=100)
+    inputs = tokenizer(prompt, return_tensors="pt")
+    outputs = model.generate(**inputs, max_new_tokens=100)
+    answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
     return {
         "question": query,
         "context_used": context,
-        "answer": result[0]["generated_text"]
+        "answer": answer
     }
 
 if __name__ == "__main__":
