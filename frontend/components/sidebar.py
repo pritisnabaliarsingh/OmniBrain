@@ -1,83 +1,64 @@
 import streamlit as st
+from utils.api import check_health
 
 
 def render_sidebar():
 
-    st.sidebar.title("🧠 OmniBrain")
+    health = check_health()
 
-    st.sidebar.markdown("## Navigation")
+    st.sidebar.markdown("# 🧠 OmniBrain")
+    st.sidebar.caption("Enterprise AI Workspace")
+
     st.sidebar.markdown("---")
 
-    # Current document information
-    if "current_document" in st.session_state:
+    st.sidebar.subheader("Workspace")
 
-        doc = st.session_state.current_document
+    doc = st.session_state.get("current_document")
 
-        st.sidebar.success("📄 Document Loaded")
+    if doc is None:
 
-        st.sidebar.write(f"**Name:** {doc['filename']}")
-        st.sidebar.write(f"**Size:** {doc['size']} bytes")
-        st.sidebar.write(f"**Status:** {doc['status']}")
+        st.sidebar.info("No document uploaded")
 
     else:
 
-        st.sidebar.warning("📄 No document uploaded")
-
-    st.sidebar.metric(
-        "💬 Messages",
-        len(st.session_state.get("messages", []))
-    )
+        st.sidebar.write(f"**📄 {doc['filename']}**")
+        st.sidebar.caption(doc["status"])
 
     st.sidebar.markdown("---")
+
+    st.sidebar.subheader("Navigation")
 
     st.sidebar.radio(
-        "Menu",
+        "",
         [
-            "🏠 Home",
-            "📄 Documents",
+            "📄 Upload",
             "💬 Chat",
-            "🕒 History",
+            "📚 History",
             "⚙️ Settings"
-        ]
+        ],
+        label_visibility="collapsed"
     )
 
     st.sidebar.markdown("---")
 
-    backend_status = "🟢 Online"
+    st.sidebar.subheader("Backend")
 
-    st.sidebar.write(f"**Backend:** {backend_status}")
+    if health.get("status") == "healthy":
+
+        st.sidebar.success("🟢 Connected")
+
+    else:
+
+        st.sidebar.error("🔴 Offline")
 
     st.sidebar.markdown("---")
 
-    st.sidebar.subheader("⚡ Quick Actions")
-
-    if st.sidebar.button("🗑 Remove Current Document"):
-
-        if "current_document" in st.session_state:
-
-            del st.session_state.current_document
-
-            st.sidebar.success("Document removed.")
-
-            st.rerun()
-
-    if st.sidebar.button("🧹 Clear Chat"):
+    if st.sidebar.button(
+        "🗑 Clear Chat",
+        use_container_width=True
+    ):
 
         st.session_state.messages = []
+        st.rerun()
 
-        st.sidebar.success("Chat cleared.")
-
-    st.sidebar.markdown("---")
-
-    with st.sidebar.expander("ℹ️ About OmniBrain"):
-
-        st.write(
-            """
-OmniBrain is a Multi-Modal RAG platform that allows users to upload
-PDF documents and interact with them using AI-powered chat.
-            """
-        )
-
-    st.sidebar.markdown("---")
-
-    st.sidebar.info("Week 1 Prototype")
+    st.sidebar.caption("OmniBrain v2")

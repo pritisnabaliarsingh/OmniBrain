@@ -1,116 +1,219 @@
-/* ------------------------------
-Global
------------------------------- */
+/* =========================
+   GOOGLE FONT
+========================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* =========================
+   ROOT
+========================= */
+
+:root{
+
+--bg:#0B1220;
+--surface:#111827;
+--surface2:#1A2435;
+--border:#263244;
+
+--primary:#6366F1;
+
+--text:#F8FAFC;
+--muted:#94A3B8;
+
+--radius:18px;
+}
+
+/* =========================
+   APP
+========================= */
 
 html,
 body,
-[data-testid="stAppViewContainer"] {
+[class*="css"]{
 
-    background: #0f172a;
-    color: white;
+font-family:'Inter',sans-serif;
+
+background:var(--bg);
+
+color:var(--text);
 }
 
-/* Remove Streamlit top padding */
+/* Remove Streamlit junk */
 
-.block-container {
+#MainMenu{
 
-    padding-top: 2rem;
-    padding-left: 4rem;
-    padding-right: 4rem;
+visibility:hidden;
 }
 
-/* ------------------------------
-Hero Section
------------------------------- */
+footer{
 
-.hero {
-
-    text-align: center;
-
-    padding: 60px;
-
-    border-radius: 24px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #312e81,
-            #4f46e5,
-            #7c3aed
-        );
-
-    margin-bottom: 40px;
-
-    box-shadow:
-        0 12px 40px rgba(0,0,0,0.35);
+visibility:hidden;
 }
 
-.hero h1 {
+header{
 
-    font-size: 52px;
-
-    margin-bottom: 10px;
-
-    color: white;
+visibility:hidden;
 }
 
-.hero p {
+/* =========================
+   MAIN
+========================= */
 
-    font-size: 20px;
+.block-container{
 
-    color: rgba(255,255,255,0.9);
+max-width:1450px;
+
+padding-top:35px;
+
+padding-left:60px;
+
+padding-right:60px;
+
+padding-bottom:40px;
 }
 
-/* ------------------------------
-Cards
------------------------------- */
+/* =========================
+   HERO
+========================= */
 
-div[data-testid="stMetric"]{
+.hero{
 
-    background:#1e293b;
+padding:40px;
 
-    border-radius:18px;
+border-radius:24px;
 
-    padding:15px;
+background:var(--surface);
 
-    border:1px solid #334155;
+border:1px solid var(--border);
+
+margin-bottom:35px;
+
+box-shadow:0 10px 35px rgba(0,0,0,.25);
 }
 
-/* ------------------------------
-Buttons
------------------------------- */
+.hero h1{
+
+font-size:54px;
+
+font-weight:700;
+
+margin-bottom:8px;
+}
+
+.hero p{
+
+font-size:18px;
+
+color:var(--muted);
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.card{
+
+background:var(--surface);
+
+border:1px solid var(--border);
+
+border-radius:18px;
+
+padding:24px;
+
+margin-bottom:22px;
+
+transition:.25s;
+}
+
+.card:hover{
+
+transform:translateY(-3px);
+
+border-color:var(--primary);
+}
+
+/* =========================
+   BUTTON
+========================= */
 
 .stButton>button{
 
-    width:100%;
+height:48px;
 
-    border-radius:12px;
+border-radius:12px;
 
-    height:52px;
+background:var(--primary);
 
-    border:none;
+color:white;
 
-    background:#4f46e5;
+border:none;
 
-    color:white;
+font-weight:600;
 
-    font-weight:600;
-
-    transition:0.3s;
+transition:.25s;
 }
 
 .stButton>button:hover{
 
-    background:#6366f1;
+transform:translateY(-2px);
 
-    transform:translateY(-2px);
+background:#7376ff;
 }
 
-/* ------------------------------
-Spacing
------------------------------- */
+/* =========================
+   INPUTS
+========================= */
 
-.section-gap{
+.stFileUploader{
 
-    margin-top:40px;
+background:var(--surface);
+
+border:2px dashed var(--border);
+
+border-radius:18px;
+
+padding:18px;
+}
+
+/* =========================
+   METRICS
+========================= */
+
+div[data-testid="stMetric"]{
+
+background:var(--surface);
+
+border-radius:18px;
+
+padding:16px;
+
+border:1px solid var(--border);
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+section[data-testid="stSidebar"]{
+
+background:#0E1627;
+
+border-right:1px solid var(--border);
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+::-webkit-scrollbar{
+
+width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+
+background:#2D3A4F;
+
+border-radius:10px;
 }

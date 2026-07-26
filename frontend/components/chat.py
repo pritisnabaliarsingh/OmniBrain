@@ -4,70 +4,92 @@ from datetime import datetime
 
 def render_chat():
 
-    st.header("💬 OmniBrain Assistant")
-    st.caption(
-        "Upload a financial report and ask questions about it. The assistant will provide insights and analysis based on the content of the uploaded PDF."
-    )
+    st.caption("Ask questions about your uploaded document.")
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
-    # Welcome Screen
+    # -----------------------------
+    # No document uploaded
+    # -----------------------------
+
+    if st.session_state.get("current_document") is None:
+
+        st.info("👈 Upload a document to start chatting with OmniBrain.")
+
+        st.markdown("### Example Questions")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.button(
+                "📄 Summarize the document",
+                disabled=True,
+                use_container_width=True
+            )
+
+            st.button(
+                "📊 Key insights",
+                disabled=True,
+                use_container_width=True
+            )
+
+        with col2:
+            st.button(
+                "⚠️ Risks",
+                disabled=True,
+                use_container_width=True
+            )
+
+            st.button(
+                "💰 Financial highlights",
+                disabled=True,
+                use_container_width=True
+            )
+
+        return
+
+    # -----------------------------
+    # Welcome
+    # -----------------------------
+
     if len(st.session_state.messages) == 0:
 
-        st.success("👋 Welcome to OmniBrain!")
-
         st.markdown("""
-            ### You can ask things like:
+### 👋 Welcome
 
-            - 📈 Summarize this financial report
-            - 📊 Explain the revenue trend
-            - 💰 What are the major expenses?
-            - ⚠️ Identify investment risks
-            - 📄 Give me key takeaways
-        """)
+Your document is ready.
 
-    st.markdown("---")    
+Try asking:
 
-    # Display previous messages
+- Summarize this document
+- What are the key takeaways?
+- Explain this report
+- Find important risks
+- Give me action items
+
+---
+""")
+
+    # -----------------------------
+    # Chat History
+    # -----------------------------
+
     for message in st.session_state.messages:
 
         with st.chat_message(message["role"]):
+
             st.markdown(message["content"])
 
-            if message["role"] == "assistant":
-                st.caption(
-                    f"📄 Citation: Demo PDF | 🕒 {message['time']}"
-                )
-            st.divider()    
-    
-    st.markdown("### 🚀 Suggested Questions")
+            st.caption(message["time"])
 
-    col1, col2 = st.columns(2)
+    # -----------------------------
+    # Input
+    # -----------------------------
 
-    suggested_prompt = None
-
-    with col1:
-
-        if st.button("📄 Summarize Document"):
-            suggested_prompt = "Summarize the uploaded document."
-
-        if st.button("📈 Revenue Growth"):
-            suggested_prompt = "Explain the revenue growth."
-
-    with col2:
-
-        if st.button("💰 EBITDA"):
-            suggested_prompt = "Explain EBITDA."
-
-        if st.button("⚠️ Investment Risks"):
-            suggested_prompt = "List the investment risks."
     prompt = st.chat_input(
-        "Ask a question about the uploaded PDF..."
+        "Ask OmniBrain anything..."
     )
-
-    if not prompt and suggested_prompt:
-        prompt = suggested_prompt
 
     if prompt:
 
@@ -77,52 +99,42 @@ def render_chat():
             {
                 "role": "user",
                 "content": prompt,
-                "time": current_time,
+                "time": current_time
             }
         )
 
         with st.chat_message("user"):
+
             st.markdown(prompt)
+
+            st.caption(current_time)
 
         with st.chat_message("assistant"):
 
-            with st.spinner("Analyzing document..."):
+            with st.spinner("Thinking..."):
 
                 response = f"""
-### 📊 Analysis
+### Response
 
-**Question**
+This is a placeholder response.
+
+Your question:
 
 > {prompt}
 
 ---
 
-✅ Placeholder response generated successfully.
-
----
-
-📄 **Citation**
-
-Page 12 (Demo)
-
----
-
-⚠️ This is currently a placeholder response.
-FastAPI and the Agentic AI backend will be connected in the upcoming development phase.
-
+When the backend RAG pipeline is connected, OmniBrain will answer using the uploaded document instead of this placeholder.
 """
 
                 st.markdown(response)
 
-                st.caption(
-                    
-                    f"📄 Demo PDF | 🕒 {current_time}"
-                )
+                st.caption(current_time)
 
         st.session_state.messages.append(
             {
                 "role": "assistant",
                 "content": response,
-                "time": current_time,
+                "time": current_time
             }
         )
