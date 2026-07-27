@@ -6,44 +6,49 @@ from utils.api import upload_pdf
 
 def render_upload():
 
-    st.subheader("📄 Upload Document")
-    st.caption("Upload a PDF to start chatting with your documents.")
+    st.markdown("## 📄 Upload Document")
+    st.caption("Upload a PDF and prepare it for AI-powered conversations.")
 
     if "uploading" not in st.session_state:
         st.session_state.uploading = False
 
     uploaded_file = st.file_uploader(
-        "Choose PDF",
-        type=["pdf"]
+        "",
+        type=["pdf"],
+        label_visibility="collapsed"
     )
 
     if uploaded_file:
 
-        col1, col2 = st.columns(2)
+        st.success("✅ File Selected")
 
-        with col1:
+        c1, c2 = st.columns(2)
+
+        with c1:
+
             st.metric(
-                "Size",
+                "📦 Size",
                 f"{uploaded_file.size/(1024*1024):.2f} MB"
             )
 
-        with col2:
+        with c2:
+
             st.metric(
-                "Type",
+                "📄 Type",
                 "PDF"
             )
 
-        st.info(uploaded_file.name)
+        st.markdown(f"**Filename**  \n{uploaded_file.name}")
 
         if st.button(
-            "Upload",
+            "🚀 Upload & Process",
             use_container_width=True,
             disabled=st.session_state.uploading
         ):
 
             st.session_state.uploading = True
 
-            with st.spinner("Uploading..."):
+            with st.spinner("Processing document..."):
 
                 response = upload_pdf(uploaded_file)
 
@@ -51,53 +56,71 @@ def render_upload():
 
             if response is None:
 
-                st.error("Backend Offline")
+                st.error("Backend is not reachable.")
 
             elif response.status_code == 200:
 
                 data = response.json()
 
                 st.session_state.current_document = {
+
                     "filename": data["filename"],
                     "content_type": data["content_type"],
                     "size": data["size"],
-                    "status": "Ready for Chat ✅"
+                    "status": "Ready for Chat 🚀"
+
                 }
 
                 progress = st.progress(0)
 
-                for i in range(101):
+                steps = [
 
-                    progress.progress(i)
+                    "Uploading...",
+                    "Processing...",
+                    "Extracting Text...",
+                    "Creating Embeddings...",
+                    "Ready!"
 
-                    time.sleep(0.01)
+                ]
 
-                st.success("Document uploaded successfully!")
+                status = st.empty()
 
-            else:
+                for i, step in enumerate(steps):
 
-                st.error("Upload Failed")
+                    status.info(step)
+
+                    progress.progress((i + 1) * 20)
+
+                    time.sleep(0.45)
+
+                status.success("Document Ready ✅")
 
     doc = st.session_state.get("current_document")
 
-    if doc is not None:
+    if doc:
 
         st.markdown("---")
 
-        st.subheader("Current Document")
+        st.subheader("📚 Current Workspace")
 
-        st.write(f"**📄 {doc['filename']}**")
+        c1, c2 = st.columns([4, 1])
 
-        st.caption(doc["status"])
+        with c1:
 
-        st.write(f"Type : {doc['content_type']}")
+            st.success(doc["status"])
 
-        st.write(f"Size : {doc['size']:,} bytes")
+            st.write(f"**📄 {doc['filename']}**")
 
-        if st.button(
-            "Remove Document",
-            use_container_width=True
-        ):
+            st.caption(doc["content_type"])
 
-            st.session_state.current_document = None
-            st.rerun()
+            st.write(f"**Size:** {doc['size']:,} bytes")
+
+        with c2:
+
+            if st.button(
+                "🗑 Remove",
+                use_container_width=True
+            ):
+
+                st.session_state.current_document = None
+                st.rerun()
