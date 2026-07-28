@@ -1,10 +1,9 @@
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import sys
 import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "rag"))
-from rag_pipeline import answer_question
-from response_formatter import format_response
+from search_agent import search_agent
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
 model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-base")
@@ -19,7 +18,6 @@ ROUTING_PROMPT_TEXT = (
 )
 
 def route_query(query):
-    """Uses the LLM to decide which agent should handle the query."""
     prompt = ROUTING_PROMPT_TEXT.format(query=query)
     inputs = tokenizer(prompt, return_tensors="pt")
     outputs = model.generate(**inputs, max_new_tokens=10)
@@ -30,34 +28,24 @@ def route_query(query):
     elif "vision" in decision:
         return "vision"
     else:
-        return "search"  
+        return "search"
 
 def sql_agent_placeholder(query):
-    return {"answer": "[SQL Agent not yet implemented by team]", "context_used": ""}
+    return {"question": query, "answer": "[SQL Agent not yet implemented by team]", "confidence": "n/a"}
 
 def vision_agent_placeholder(query):
-    return {"answer": "[Vision Agent not yet implemented by team]", "context_used": ""}
+    return {"question": query, "answer": "[Vision Agent not yet implemented by team]", "confidence": "n/a"}
 
 def supervisor(query):
-    """
-    Main orchestrator: routes the query to the correct agent and returns a formatted answer.
-    """
     agent = route_query(query)
     print(f"[Supervisor] Routed to: {agent} agent")
 
     if agent == "search":
-        result = answer_question(query)
+        return search_agent(query)
     elif agent == "sql":
-        result = sql_agent_placeholder(query)
+        return sql_agent_placeholder(query)
     elif agent == "vision":
-        result = vision_agent_placeholder(query)
-
-    formatted = format_response(
-        question=query,
-        answer=result["answer"],
-        context_used=result.get("context_used", "")
-    )
-    return formatted
+        return vision_agent_placeholder(query)
 
 if __name__ == "__main__":
     test_queries = [
