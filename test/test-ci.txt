@@ -1,1 +1,3 @@
 file addded to test the github actions to work correctly on push 🙂
+
+now testinng the docker build pipeline
