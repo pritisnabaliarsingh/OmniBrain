@@ -1,44 +1,68 @@
-name: Docker CI
+name: Docker Build Verification
 
 on:
   push:
     branches:
       - devops
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
-  docker-test:
+  docker-build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Verify Dockerfile Exists
+        run: |
+          if [ ! -f Dockerfile ]; then
+            echo "Dockerfile not found!"
+            exit 1
+          fi
+
       - name: Build Docker Image
         run: |
-          docker build -t streamlit-test .
+          docker build -t ci-build:${{ github.sha }} .
 
-      - name: Run Docker Container
+      - name: Docker Build Successful
         run: |
-          docker run -d \
-            --name streamlit-container \
-            -p 8501:8501 \
-            streamlit-test
+          echo "✅ Docker image built successfully."
 
-      - name: Wait for Application
-        run: sleep 10
-
-      - name: Verify Container is Running
-        run: |
-          docker ps
-          docker ps --filter "name=streamlit-container" --filter "status=running" | grep streamlit-container
-
-      - name: Show Container Logs (if failure)
+      - name: Create GitHub Issue on Failure
         if: failure()
-        run: |
-          docker logs streamlit-container || true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 CI Failure - Docker Build (${context.sha.substring(0,7)})`,
+              body: `
+## Docker Build Failed
 
-      - name: Stop and Remove Container
-        if: always()
-        run: |
-          docker stop streamlit-container || true
-          docker rm streamlit-container || true
+A Docker build failed during CI.
+
+### Repository
+${context.repo.owner}/${context.repo.repo}
+
+### Branch
+${context.ref.replace('refs/heads/', '')}
+
+### Commit
+${context.sha}
+
+### Triggered By
+${context.actor}
+
+### Workflow Logs
+https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}
+
+Please investigate the Dockerfile or recent changes.
+              `,
+              labels: ["ci", "docker", "bug"]
+            })
