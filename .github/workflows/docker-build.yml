@@ -50,17 +50,14 @@ jobs:
         run: |
           gh issue create \
             --title "Docker Build/Run Failed on ${{ github.ref_name }}" \
-            --body "$(cat <<EOF
-## Docker Build or Run Failed
+            --body "## Docker Build or Run Failed
 
-**Repository:** ${{ github.repository }}
-**Branch:** ${{ github.ref_name }}
-**Commit:** ${{ github.sha }}
-**Triggered By:** ${{ github.actor }}
+          **Repository:** ${{ github.repository }}
+          **Branch:** ${{ github.ref_name }}
+          **Commit:** ${{ github.sha }}
+          **Triggered By:** ${{ github.actor }}
 
-**Workflow Logs:**
-https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          **Workflow Logs:**
+          https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-Please investigate the Dockerfile or recent changes on this branch.
-EOF
-)"
+          Please investigate the Dockerfile or recent changes on this branch."
