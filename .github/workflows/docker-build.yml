@@ -1,0 +1,63 @@
+name: Docker Build & Run Verification
+
+on:
+  push:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Verify Dockerfile Exists
+        run: |
+          if [ ! -f Dockerfile ]; then
+            echo "Dockerfile not found in branch ${{ github.ref_name }}!"
+            exit 1
+          fi
+
+      - name: Build Docker Image
+        run: docker build -t ci-build:${{ github.sha }} .
+
+      - name: Run Container
+        run: |
+          docker run -d --name ci-test-container ci-build:${{ github.sha }}
+          sleep 5
+
+      - name: Check Container Is Running
+        run: |
+          if [ "$(docker inspect -f '{{.State.Running}}' ci-test-container)" != "true" ]; then
+            echo "Container exited unexpectedly!"
+            docker logs ci-test-container
+            exit 1
+          fi
+          echo "Container is running."
+
+      - name: Cleanup
+        if: always()
+        run: docker rm -f ci-test-container || true
+
+      - name: Create GitHub Issue on Failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "Docker Build/Run Failed on ${{ github.ref_name }}" \
+            --body "## Docker Build or Run Failed
+
+          **Repository:** ${{ github.repository }}
+          **Branch:** ${{ github.ref_name }}
+          **Commit:** ${{ github.sha }}
+          **Triggered By:** ${{ github.actor }}
+
+          **Workflow Logs:**
+          https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          Please investigate the Dockerfile or recent changes on this branch."
