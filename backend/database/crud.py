@@ -41,3 +41,40 @@ def delete_document(db: Session, document_id: int):
         db.commit()
 
     return document
+    from .models import ChatHistory
+
+
+def create_chat_history(db, document_id, question, answer):
+    history = ChatHistory(
+        document_id=document_id,
+        user_question=question,
+        ai_answer=answer
+    )
+
+    db.add(history)
+    db.commit()
+    db.refresh(history)
+
+    return history
+
+
+def get_chat_history(db, document_id):
+    return (
+        db.query(ChatHistory)
+        .filter(ChatHistory.document_id == document_id)
+        .all()
+    )
+
+
+def delete_chat_history(db, history_id):
+    history = (
+        db.query(ChatHistory)
+        .filter(ChatHistory.id == history_id)
+        .first()
+    )
+
+    if history:
+        db.delete(history)
+        db.commit()
+
+    return history
