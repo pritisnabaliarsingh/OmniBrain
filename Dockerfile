@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD [ "python","-m","document_processing.main","document_processing/samples/sample.pdf"]
+CMD [ "python","-m","document_processing.main","document_processing/errorOnPurpose/sample.pdf"]
