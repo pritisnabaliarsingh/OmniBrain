@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 from datetime import datetime
 
 Base = declarative_base()
@@ -13,6 +13,8 @@ class Document(Base):
     uploaded_at = Column(DateTime, default=datetime.utcnow, index=True)
     file_size = Column(Integer)
     status = Column(String(50), index=True)
+    chunks = relationship("Chunk", back_populates="document")
+    history = relationship("ChatHistory", back_populates="document")
 
 
 class Chunk(Base):
@@ -32,3 +34,4 @@ class ChatHistory(Base):
     user_question = Column(Text)
     ai_answer = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)
+    document = relationship("Document", back_populates="history")
