@@ -1,0 +1,3 @@
+run command : python -m document_processing.main <path_to_pdf>
+
+this runs as a python package not a like a python file i.e., python document_processing\main.py will not work as interdependence between file exists.
