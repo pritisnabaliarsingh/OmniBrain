@@ -27,17 +27,18 @@ jobs:
 
       - name: Run Container
         run: |
-          docker run -d --name ci-test-container ci-build:${{ github.sha }}
-          sleep 5
+          docker run --name ci-test-container ci-build:${{ github.sha }}
 
-      - name: Check Container Is Running
+      - name: Check Container Exit Code
         run: |
-          if [ "$(docker inspect -f '{{.State.Running}}' ci-test-container)" != "true" ]; then
-            echo "Container exited unexpectedly!"
+          exit_code=$(docker inspect ci-test-container --format='{{.State.ExitCode}}')
+          echo "Container exited with code $exit_code"
+          if [ "$exit_code" -ne 0 ]; then
+            echo "Container failed!"
             docker logs ci-test-container
             exit 1
           fi
-          echo "Container is running."
+          echo "Container completed successfully."
 
       - name: Cleanup
         if: always()
