@@ -13,19 +13,19 @@ def run_test(question, expected_behavior):
     return formatted
 
 if __name__ == "__main__":
-    # Test 1: Answerable question (sanity check)
+    # Test 1:sanity check
     run_test(
-        "What was the revenue growth?",
+        "What was the revenue in May?",
         "Should answer correctly using context"
     )
 
-    # Test 2: Unanswerable question (hallucination check)
+    # Test 2:hallucination check
     run_test(
         "What is the CEO's name?",
         "Should say info not available, NOT make something up"
     )
 
-    # Test 3: Vague/nonsense question (robustness check)
+    # Test 3:robustness check
     run_test(
         "asdkjaskjd random text",
         "Should not crash, should handle gracefully"

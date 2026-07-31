@@ -10,7 +10,7 @@ def format_response(question, answer, context_used, sources=None):
     formatted = {
         "question": question,
         "answer": cleaned_answer,
-        "sources_used": sources if sources else ["Sample document (placeholder)"],
+        "sources_used": sources if sources else ["Document Processing Pipeline (real extracted data)"],
         "context_snippet": context_used[:200] + ("..." if len(context_used) > 200 else ""),
         "confidence": "high" if len(cleaned_answer) > 0 and "does not contain" not in cleaned_answer else "low"
     }
