@@ -20,11 +20,13 @@ def answer_question(query, k=2):
         "context_used": context,
         "answer": answer
     }
-
 if __name__ == "__main__":
-    query = "What was the revenue growth?"
-    result = answer_question(query)
+    test_queries = [
+        "What was the revenue in May?",
+        "Who is the CEO of the company?",
+    ]
 
-    print(f"Question: {result['question']}\n")
-    print(f"Context used:\n{result['context_used']}\n")
-    print(f"Answer: {result['answer']}")
+    for query in test_queries:
+        result = answer_question(query)
+        print(f"\nQuestion: {result['question']}")
+        print(f"Answer: {result['answer']}")
