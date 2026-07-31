@@ -1,9 +1,9 @@
 import sys
 import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "rag"))
-from rag_pipeline import answer_question
-from response_formatter import format_response
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from rag.rag_pipeline import answer_question
+from rag.response_formatter import format_response
 
 def search_agent(query, k=2):
     """

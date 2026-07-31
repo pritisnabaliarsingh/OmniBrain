@@ -1,3 +1,7 @@
 __pycache__/
 *.pyc
+venv/
+document_processing/output/
+.env
 faiss_index/
+document_processing/
