@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from .models import Document
 from .models import ChatHistory
 
+
 def create_document(db: Session, filename: str, file_size: int, status: str):
     document = Document(
         filename=filename,
@@ -110,3 +111,19 @@ def delete_chat_history(db: Session, history_id: int):
         db.commit()
 
     return history
+    def create_chat_session(db: Session, document_id: int):
+    session = ChatSession(document_id=document_id)
+
+    db.add(session)
+    db.commit()
+    db.refresh(session)
+
+    return session
+
+
+def get_chat_session(db: Session, session_id: str):
+    return (
+        db.query(ChatSession)
+        .filter(ChatSession.session_id == session_id)
+        .first()
+    )
