@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
+import uuid
 from sqlalchemy.orm import declarative_base, relationship
 from datetime import datetime
 
@@ -35,3 +36,18 @@ class ChatHistory(Base):
     ai_answer = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)
     document = relationship("Document", back_populates="history")
+
+class ChatSession(Base):
+    __tablename__ = "chat_sessions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    session_id = Column(
+        String(36),
+        unique=True,
+        nullable=False,
+        default=lambda: str(uuid.uuid4())
+    )
+    document_id = Column(Integer, ForeignKey("documents.id"), index=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    document = relationship("Document")
