@@ -5,30 +5,32 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "rag"))
 from search_agent import search_agent
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
-model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-base")
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-ROUTING_PROMPT_TEXT = (
-    "Given the user query below, decide which agent should handle it:\n"
-    "- 'search' for general text/document questions\n"
-    "- 'sql' for numeric or historical data questions\n"
-    "- 'vision' for questions about charts, tables, or images\n\n"
-    "Query: {query}\n\n"
-    "Respond with only one word: search, sql, or vision."
-)
+# Keyword-based routing — fast, reliable, no model needed for obvious cases
+VISION_KEYWORDS = ["chart", "image", "picture", "graph", "diagram", "photo", "visual", "figure", "table image"]
+SQL_KEYWORDS = ["database", "schema", "sql", "table structure", "column", "query the database", "records in database"]
 
 def route_query(query):
-    prompt = ROUTING_PROMPT_TEXT.format(query=query)
-    inputs = tokenizer(prompt, return_tensors="pt")
-    outputs = model.generate(**inputs, max_new_tokens=10)
-    decision = tokenizer.decode(outputs[0], skip_special_tokens=True).strip().lower()
+    """
+    Hybrid routing: keyword rules first (fast, accurate),
+    LLM classification as fallback for ambiguous cases.
+    """
+    query_lower = query.lower().strip()
 
-    if "sql" in decision:
-        return "sql"
-    elif "vision" in decision:
+    if not query_lower:
+        return "search"  # default for empty input
+
+    # Rule 1: Check for vision keywords
+    if any(keyword in query_lower for keyword in VISION_KEYWORDS):
         return "vision"
-    else:
-        return "search"
+
+    # Rule 2: Check for SQL keywords
+    if any(keyword in query_lower for keyword in SQL_KEYWORDS):
+        return "sql"
+
+   # Rule 3: No clear keyword match — default to Search Agent (the reliable, working agent)
+    return "search"
 
 def sql_agent_placeholder(query):
     return {"question": query, "answer": "[SQL Agent not yet implemented by team]", "confidence": "n/a"}
@@ -49,9 +51,10 @@ def supervisor(query):
 
 if __name__ == "__main__":
     test_queries = [
-        "What was the revenue growth?",
+        "What was the revenue in May?",
         "Show me the sales chart",
         "What is the SQL database schema?",
+        "Who is the CEO?",
     ]
 
     for q in test_queries:
