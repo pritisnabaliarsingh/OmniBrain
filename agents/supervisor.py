@@ -3,9 +3,6 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "rag"))
 from search_agent import search_agent
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 # Keyword-based routing — fast, reliable, no model needed for obvious cases
 VISION_KEYWORDS = ["chart", "image", "picture", "graph", "diagram", "photo", "visual", "figure", "table image"]
@@ -13,23 +10,20 @@ SQL_KEYWORDS = ["database", "schema", "sql", "table structure", "column", "query
 
 def route_query(query):
     """
-    Hybrid routing: keyword rules first (fast, accurate),
-    LLM classification as fallback for ambiguous cases.
+    Hybrid routing: keyword rules decide obvious cases.
+    Anything ambiguous safely defaults to Search Agent (the reliable, tested agent).
     """
     query_lower = query.lower().strip()
 
     if not query_lower:
-        return "search"  # default for empty input
+        return "search"
 
-    # Rule 1: Check for vision keywords
     if any(keyword in query_lower for keyword in VISION_KEYWORDS):
         return "vision"
 
-    # Rule 2: Check for SQL keywords
     if any(keyword in query_lower for keyword in SQL_KEYWORDS):
         return "sql"
 
-   # Rule 3: No clear keyword match — default to Search Agent (the reliable, working agent)
     return "search"
 
 def sql_agent_placeholder(query):
@@ -39,6 +33,13 @@ def vision_agent_placeholder(query):
     return {"question": query, "answer": "[Vision Agent not yet implemented by team]", "confidence": "n/a"}
 
 def supervisor(query):
+    """
+    Main orchestrator: validates input, routes the query to the correct agent,
+    and returns a formatted answer.
+    """
+    if not query or not query.strip():
+        return {"question": query, "answer": "Please provide a valid question.", "confidence": "n/a"}
+
     agent = route_query(query)
     print(f"[Supervisor] Routed to: {agent} agent")
 
@@ -55,9 +56,10 @@ if __name__ == "__main__":
         "Show me the sales chart",
         "What is the SQL database schema?",
         "Who is the CEO?",
+        "",
     ]
 
     for q in test_queries:
-        print(f"\n=== Query: {q} ===")
+        print(f"\n=== Query: {q if q else '(empty)'} ===")
         result = supervisor(q)
         print(f"Answer: {result['answer']}")
