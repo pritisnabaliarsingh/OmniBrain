@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
-from .models import Document
-from .models import ChatHistory
+from .models import Document, ChatHistory, ChatSession
 
 
 def create_document(db: Session, filename: str, file_size: int, status: str):
