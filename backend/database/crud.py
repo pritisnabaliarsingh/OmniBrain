@@ -128,3 +128,15 @@ def get_chat_session(db: Session, session_id: str):
     )
 def get_documents_by_status(db: Session, status: str):
     return db.query(Document).filter(Document.status == status).all()    
+def get_document_metadata(db: Session, document_id: int):
+    document = get_document(db, document_id)
+
+    if document:
+        return {
+            "id": document.id,
+            "filename": document.filename,
+            "file_size": document.file_size,
+            "status": document.status
+        }
+
+    return None    
