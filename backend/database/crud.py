@@ -126,3 +126,5 @@ def get_chat_session(db: Session, session_id: str):
         .filter(ChatSession.session_id == session_id)
         .first()
     )
+def get_documents_by_status(db: Session, status: str):
+    return db.query(Document).filter(Document.status == status).all()    
