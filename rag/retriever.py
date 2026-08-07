@@ -3,18 +3,34 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_core.documents import Document
 import sys
 import os
+import re
 
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 _vectorstore_cache = None
 
+def reformat_table_text(text):
+    """
+    Detects table-like text (Month Region Units Revenue...) and reformats it
+    into clear one-row-per-line format, so numbers can't be confused with the wrong column.
+    """
+    if "Month" in text and "Region" in text and "Revenue" in text:
+        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        pattern = r'(' + '|'.join(months) + r')\s+(\w+)\s+(\d+)\s+(\d+)'
+        matches = re.findall(pattern, text)
+        if matches:
+            lines = ["Sales data by month:"]
+            for month, region, units, revenue in matches:
+                lines.append(f"- Month: {month}, Region: {region}, Units Sold: {units}, Revenue (USD): {revenue}")
+            return "\n".join(lines)
+    return text
+
 def load_real_documents(pdf_path="document_processing/samples/sample.pdf"):
     """Loads real document chunks WITH metadata (page numbers, etc.) from Document Processing."""
     from document_processing.integration.export_for_rag import export_for_rag
     records = export_for_rag(pdf_path)
-    # Keep text AND metadata together, instead of discarding metadata
     documents = [
-        Document(page_content=r["text"], metadata=r["metadata"])
+        Document(page_content=reformat_table_text(r["text"]), metadata=r["metadata"])
         for r in records
     ]
     return documents

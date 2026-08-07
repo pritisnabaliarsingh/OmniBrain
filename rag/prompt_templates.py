@@ -10,19 +10,20 @@ QA_PROMPT_V1 = PromptTemplate.from_template(
     "Answer:"
 )
 
-# Tuned version — more specific instructions, reduces hallucination risk
 QA_PROMPT_V2 = PromptTemplate.from_template(
-    "You are a financial document analyst. Follow these rules strictly:\n"
-    "1. Only use information explicitly stated in the context below.\n"
-    "2. If the context does not contain the answer, respond exactly with: "
-    "'The provided document does not contain this information.'\n"
-    "3. Keep your answer concise — 1 to 3 sentences maximum.\n"
-    "4. Do not guess, assume, or add outside knowledge.\n\n"
+    "You are a precise financial data extractor. The context below may contain a table with multiple rows.\n\n"
+    "STRICT RULES:\n"
+    "1. If the question mentions a specific month, region, or item name, find ONLY that exact row in the table.\n"
+    "2. Do not mix up numbers between different rows.\n"
+    "3. Only state facts EXACTLY as written in the context — never guess or infer.\n"
+    "4. If the exact fact isn't in the context, respond exactly: 'The provided document does not contain this information.'\n"
+    "5. Give a short, direct answer with the correct number only.\n\n"
     "Context:\n{context}\n\n"
     "Question: {question}\n\n"
+    "Step 1 - Identify the exact row/item the question is asking about.\n"
+    "Step 2 - State the value from that exact row only.\n\n"
     "Answer:"
 )
-
 ROUTING_PROMPT = PromptTemplate.from_template(
     "Given the user query below, decide which agent should handle it:\n"
     "- 'search' for general text/document questions\n"
