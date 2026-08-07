@@ -9,6 +9,7 @@ def answer_question(query, k=2):
     retriever = get_retriever(search_type="similarity", k=k)
     docs = retriever.invoke(query)
     context = "\n".join([doc.page_content for doc in docs])
+    pages = sorted(set(doc.metadata.get("page_number", "unknown") for doc in docs))
 
     prompt = QA_PROMPT_V2.format(context=context, question=query)
     inputs = tokenizer(prompt, return_tensors="pt")
@@ -18,15 +19,13 @@ def answer_question(query, k=2):
     return {
         "question": query,
         "context_used": context,
-        "answer": answer
+        "answer": answer,
+        "source_pages": pages
     }
-if __name__ == "__main__":
-    test_queries = [
-        "What was the revenue in May?",
-        "Who is the CEO of the company?",
-    ]
 
-    for query in test_queries:
-        result = answer_question(query)
-        print(f"\nQuestion: {result['question']}")
-        print(f"Answer: {result['answer']}")
+if __name__ == "__main__":
+    query = "What was the revenue in May?"
+    result = answer_question(query)
+    print(f"Question: {result['question']}")
+    print(f"Answer: {result['answer']}")
+    print(f"Source page(s): {result['source_pages']}")
