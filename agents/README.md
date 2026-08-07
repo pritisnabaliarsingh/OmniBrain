@@ -5,7 +5,7 @@ Branch: Rag
 
 ## What this module does
 
-This is the "thinking layer" of OmniBrain — it takes a user's question, decides which specialist agent should handle it, retrieves relevant information from real documents, and generates a grounded, hallucination-safe answer.
+This is the "thinking layer" of OmniBrain  it takes a user's question, decides which specialist agent should handle it, retrieves relevant information from real documents, and generates a grounded, hallucination-safe answer.
 
 ## Architecture
 
