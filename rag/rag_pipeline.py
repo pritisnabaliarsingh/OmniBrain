@@ -1,6 +1,10 @@
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-from retriever import get_retriever
-from prompt_templates import QA_PROMPT_V2
+try:
+    from rag.retriever import get_retriever
+    from rag.prompt_templates import QA_PROMPT_V2
+except ModuleNotFoundError:
+    from retriever import get_retriever
+    from prompt_templates import QA_PROMPT_V2
 
 tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
 model = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-base")

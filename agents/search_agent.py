@@ -6,17 +6,13 @@ from rag.rag_pipeline import answer_question
 from rag.response_formatter import format_response
 
 def search_agent(query, k=2):
-    """
-    Search Agent — handles general text/document questions.
-    Wraps the RAG pipeline (retriever + prompt + LLM) into a clean, standard interface
-    that the Supervisor can call.
-    """
     result = answer_question(query, k=k)
     formatted = format_response(
         question=result["question"],
         answer=result["answer"],
         context_used=result["context_used"],
-        sources=["Document Search (sample data)"]
+        sources=["Document Search (real data)"],
+        source_pages=result.get("source_pages", [])
     )
     return formatted
 
