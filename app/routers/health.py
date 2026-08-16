@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from app.utils.logger import logger
 
-router = APIRouter()
+router = APIRouter(tags=["Health"])
 @router.get("/")
 def root():
     logger.info("Root endpoint accessed")
