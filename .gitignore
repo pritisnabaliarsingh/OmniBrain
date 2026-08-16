@@ -3,3 +3,14 @@ __pycache__/
 *.pyc
 document_processing/output/
 .env
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+*.db
+.pytest_cache/
+.DS_Store
+node_modules/
+
+devOps.md
