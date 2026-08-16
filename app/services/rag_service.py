@@ -43,8 +43,18 @@ def ask_rag(request):
         raise
 
     except Exception as e:
-        logger.error(f"Unexpected Error: {str(e)}")
+        error_message = str(e)
 
+        logger.error(f"RAG Error: {error_message}")
+
+        # Gemini quota / rate-limit error
+        if "429" in error_message or "quota" in error_message.lower():
+            raise HTTPException(
+                status_code=429,
+                detail="Gemini API quota exceeded. Please try again later."
+            )
+
+        # Other unexpected errors
         raise HTTPException(
             status_code=500,
             detail="Internal Server Error"
