@@ -3,4 +3,8 @@ venv/
 .venv/
 __pycache__/
 *.pyc
+uploads/.env
+*Copy.env
+__pycache__/
+*.pyc
 uploads/
