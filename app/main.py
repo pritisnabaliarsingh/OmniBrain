@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from app.routers import api_router
 from app.utils.logger import logger
+from app.routers.vision import router as vision_router
 
 
 app = FastAPI(
@@ -17,3 +18,4 @@ async def startup_event():
 
 
 app.include_router(api_router)
+app.include_router(vision_router)
