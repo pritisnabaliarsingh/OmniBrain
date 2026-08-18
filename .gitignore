@@ -11,3 +11,6 @@ uploads/
 document_processing/output/
 
 faiss_index/
+.vscode/
+env/
+.streamlit/
