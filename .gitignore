@@ -9,3 +9,5 @@ __pycache__/
 *.pyc
 uploads/
 document_processing/output/
+
+faiss_index/
