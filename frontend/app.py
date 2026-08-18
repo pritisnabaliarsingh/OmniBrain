@@ -19,7 +19,9 @@ st.set_page_config(
 # LOAD CSS
 # ----------------------------------------------------
 
-with open("styles/styles.css", encoding="utf-8") as css:
+import os
+css_path = os.path.join(os.path.dirname(__file__), "styles", "styles.css")
+with open(css_path, encoding="utf-8") as css:
     st.markdown(
         f"<style>{css.read()}</style>",
         unsafe_allow_html=True
