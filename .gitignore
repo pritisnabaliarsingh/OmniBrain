@@ -8,3 +8,4 @@ uploads/.env
 __pycache__/
 *.pyc
 uploads/
+document_processing/output/
