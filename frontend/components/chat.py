@@ -1,5 +1,6 @@
 import streamlit as st
 from datetime import datetime
+from utils.api import ask_question
 
 
 def render_chat():
@@ -113,19 +114,8 @@ Try asking:
 
             with st.spinner("Thinking..."):
 
-                response = f"""
-### Response
-
-This is a placeholder response.
-
-Your question:
-
-> {prompt}
-
----
-
-When the backend RAG pipeline is connected, OmniBrain will answer using the uploaded document instead of this placeholder.
-"""
+                answer = ask_question(prompt)
+                response = f"### Response\n\n{answer}"
 
                 st.markdown(response)
 

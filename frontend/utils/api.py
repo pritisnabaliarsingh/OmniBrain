@@ -34,4 +34,17 @@ def upload_pdf(uploaded_file):
 
     except requests.exceptions.RequestException:
         return None
+
+def ask_question(question):
+    try:
+        response = requests.post(
+            f"{BASE_URL}/ask",
+            json={"question": question}
+        )
+        if response.status_code == 200:
+            return response.json().get("answer")
+        else:
+            return f"Error: {response.text}"
+    except requests.exceptions.RequestException as e:
+        return f"Error connecting to backend: {e}"
     
