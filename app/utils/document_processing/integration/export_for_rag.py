@@ -1,5 +1,5 @@
 import json
-from document_processing.pipeline.cached_pipeline import run_pipeline_cached
+from app.utils.document_processing.pipeline.cached_pipeline import run_pipeline_cached
 
 def export_for_rag(file_path: str, output_json: str = "document_processing/output/rag_input.json"):
     """

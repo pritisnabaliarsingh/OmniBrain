@@ -5,6 +5,9 @@ WORKDIR /app
 
 COPY requirements.txt .
 
+RUN apt-get update && apt-get install -y tesseract-ocr && rm -rf /var/lib/apt/lists/*
+
+
 RUN pip install --no-cache-dir --default-timeout=1000 --retries=10 \
     --index-url https://download.pytorch.org/whl/cpu \
     torch

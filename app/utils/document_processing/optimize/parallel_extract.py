@@ -1,6 +1,6 @@
 import fitz
 from concurrent.futures import ProcessPoolExecutor
-from document_processing.extractors.text_extractor import clean_text
+from app.utils.document_processing.extractors.text_extractor import clean_text
 
 def _process_single_page(args):
     file_path, page_num = args

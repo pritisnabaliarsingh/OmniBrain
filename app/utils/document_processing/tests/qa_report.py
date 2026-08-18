@@ -1,7 +1,7 @@
-from document_processing.extractors.text_extractor import extract_clean_pages
-from document_processing.extractors.table_extractor import extract_tables
-from document_processing.extractors.image_extractor import extract_images
-from document_processing.extractors.metadata_extractor import extract_metadata
+from app.utils.document_processing.extractors.text_extractor import extract_clean_pages
+from app.utils.document_processing.extractors.table_extractor import extract_tables
+from app.utils.document_processing.extractors.image_extractor import extract_images
+from app.utils.document_processing.extractors.metadata_extractor import extract_metadata
 
 def run_qa(file_path: str) -> dict:
     text_pages = extract_clean_pages(file_path)

@@ -1,4 +1,4 @@
-from document_processing.pipeline.hybrid_pipeline import run_hybrid_pipeline
+from app.utils.document_processing.pipeline.hybrid_pipeline import run_hybrid_pipeline
 
 def test_pipeline_runs():
     result = run_hybrid_pipeline("document_processing/samples/sample.pdf")

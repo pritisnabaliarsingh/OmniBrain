@@ -3,8 +3,8 @@ Entry point for the Document Processing module.
 Usage: python -m document_processing.main <path_to_pdf>
 """
 import sys
-from document_processing.integration.export_for_rag import export_for_rag
-from document_processing.tests.qa_report import run_qa
+from app.utils.document_processing.integration.export_for_rag import export_for_rag
+from app.utils.document_processing.tests.qa_report import run_qa
 
 def main(file_path: str):
     print("Running QA check...")

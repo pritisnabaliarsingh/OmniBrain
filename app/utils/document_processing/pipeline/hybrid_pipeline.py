@@ -1,6 +1,6 @@
-from document_processing.extractors.ocr_extractor import extract_with_ocr_fallback
-from document_processing.extractors.table_extractor import extract_tables
-from document_processing.chunkers.tagged_chunker import tagged_chunks
+from app.utils.document_processing.extractors.ocr_extractor import extract_with_ocr_fallback
+from app.utils.document_processing.extractors.table_extractor import extract_tables
+from app.utils.document_processing.chunkers.tagged_chunker import tagged_chunks
 
 def run_hybrid_pipeline(file_path: str) -> dict:
     text_pages = extract_with_ocr_fallback(file_path)   # handles native + scanned

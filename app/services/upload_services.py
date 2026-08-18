@@ -47,16 +47,18 @@ async def save_pdf(file: UploadFile):
     logger.info(f"File uploaded successfully: {file.filename}")
 
     # Use Advanced Hybrid Pipeline
-    from document_processing.pipeline.hybrid_pipeline import run_hybrid_pipeline
+    from app.utils.document_processing.pipeline.hybrid_pipeline import run_hybrid_pipeline
     pipeline_result = run_hybrid_pipeline(file_path)
     
     chunks = pipeline_result["chunks"]
     tables = pipeline_result["tables"]
 
     # Combine text chunks and tables for embedding
-    all_text_chunks = [chunk.text for chunk in chunks]
+    all_text_chunks = [chunk["text"] for chunk in chunks]
     for table in tables:
-        all_text_chunks.append(table.to_markdown())
+        # table["rows"] is a list of lists of strings
+        table_str = "\n".join([" | ".join([str(cell) if cell else "" for cell in row]) for row in table["rows"]])
+        all_text_chunks.append(f"Table Page {table['page_number']}:\n{table_str}")
 
     # Create embeddings
     embeddings = create_embeddings(all_text_chunks)
@@ -67,18 +69,17 @@ async def save_pdf(file: UploadFile):
     logger.info("Vector Store Created Successfully")
 
     # Save Metadata to SQL Database
-    from app.database.session import SessionLocal
+    from app.database.db import SessionLocal
     from app.database.crud import create_document
-    from app.database.schemas import DocumentCreate
 
     db = SessionLocal()
     try:
-        doc_data = DocumentCreate(
+        create_document(
+            db=db, 
             filename=file.filename,
-            file_type=file.content_type,
-            file_size=len(content)
+            file_size=len(content),
+            status="Processed"
         )
-        create_document(db, doc_data)
         logger.info("Document metadata saved to SQLite.")
     finally:
         db.close()

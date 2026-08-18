@@ -13,7 +13,7 @@ def render_upload():
         st.session_state.uploading = False
 
     uploaded_file = st.file_uploader(
-        "",
+        "Upload PDF",
         type=["pdf"],
         label_visibility="collapsed"
     )
@@ -94,6 +94,8 @@ def render_upload():
                     time.sleep(0.45)
 
                 status.success("Document Ready ✅")
+                time.sleep(1)
+                st.rerun()
 
     doc = st.session_state.get("current_document")
 

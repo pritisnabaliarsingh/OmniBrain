@@ -25,13 +25,14 @@ class Chunk(Base):
     document_id = Column(Integer, ForeignKey("documents.id"), index=True)
     chunk_text = Column(Text)
     chunk_number = Column(Integer)
+    document = relationship("Document", back_populates="chunks")
 
 
 class ChatHistory(Base):
     __tablename__ = "chat_history"
 
     id = Column(Integer, primary_key=True, index=True)
-   document_id = Column(Integer, ForeignKey("documents.id"), index=True)
+    document_id = Column(Integer, ForeignKey("documents.id"), index=True)
     user_question = Column(Text)
     ai_answer = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)

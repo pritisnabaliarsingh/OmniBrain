@@ -1,5 +1,5 @@
 import os
-from document_processing.pipeline.cached_pipeline import run_pipeline_cached
+from app.utils.document_processing.pipeline.cached_pipeline import run_pipeline_cached
 
 def smoke_test(sample_dir: str = "document_processing/samples"):
     pdfs = [f for f in os.listdir(sample_dir) if f.endswith(".pdf")]

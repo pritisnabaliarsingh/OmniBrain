@@ -20,11 +20,11 @@ else:
 def generate_answer(question, context):
     if USE_GEMINI:
         prompt = f"Use only the context below to answer the user's question.\n\nContext:\n{context}\n\nQuestion:\n{question}\n\nAnswer:\n"
-        interaction = client.interactions.create(
-            model="gemini-3.7-flash",
-            input=prompt
+        interaction = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=prompt
         )
-        return interaction.output_text
+        return interaction.text
     else:
         messages = [
             {"role": "system", "content": f"You are an AI Assistant. Answer the question using ONLY the provided context.\n\nContext:\n{context}"},

@@ -10,11 +10,9 @@ services:
       - "8000:8000"
     environment:
       - PYTHONUNBUFFERED=1
-      - GEMINI_API_KEY=dummy_key
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
     volumes:
       - ./app:/app/app
-      - ./database:/app/database
-      - ./document_processing:/app/document_processing
 
   frontend:
     build:

@@ -58,12 +58,13 @@ tqdm
 langchain==1.3.14
 langchain-community==0.4.2
 langchain-core==1.4.9
+langgraph
 
 sentence-transformers==5.6.0
 faiss-cpu==1.14.3
 
 transformers==5.14.1
-torch==2.13.0
+torch
 
 numpy==2.5.1
 

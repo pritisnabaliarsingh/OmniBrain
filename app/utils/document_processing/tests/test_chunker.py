@@ -1,4 +1,4 @@
-from document_processing.chunkers.sliding_window import sliding_window_chunk
+from app.utils.document_processing.chunkers.sliding_window import sliding_window_chunk
 
 def test_chunk_count():
     text = "word " * 1000
