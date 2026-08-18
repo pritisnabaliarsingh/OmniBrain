@@ -64,6 +64,8 @@ async def save_pdf(file: UploadFile):
 
     return {
         "filename": file.filename,
+        "content_type": file.content_type,
+        "size": len(content),
         "chunks": len(chunks),
         "message": "PDF processed successfully."
     }
