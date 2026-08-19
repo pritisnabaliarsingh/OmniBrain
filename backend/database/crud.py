@@ -29,8 +29,13 @@ def update_document_status(db: Session, document_id: int, status: str):
 
     if document:
         document.status = status
-        db.commit()
-        db.refresh(document)
+
+        try:
+            db.commit()
+            db.refresh(document)
+        except Exception:
+            db.rollback()
+            raise
 
     return document
 
