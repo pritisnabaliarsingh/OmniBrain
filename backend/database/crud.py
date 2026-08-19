@@ -126,5 +126,11 @@ def get_document_metadata(db: Session, document_id: int):
             "file_size": document.file_size,
             "status": document.status
         }
+def search_documents_by_filename(db: Session, keyword: str):
+    return (
+        db.query(Document)
+        .filter(Document.filename.ilike(f"%{keyword}%"))
+        .all()
+    )        
 
     return None
