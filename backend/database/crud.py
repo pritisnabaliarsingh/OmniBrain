@@ -160,3 +160,17 @@ def get_document_analytics(db: Session):
         "processed": processed,
         "pending": pending
     }
+
+
+# Reports
+
+def get_document_report(db: Session):
+    documents = db.query(Document).all()
+
+    return {
+        "total_documents": len(documents),
+        "total_file_size": sum(
+            document.file_size or 0
+            for document in documents
+        )
+    }
