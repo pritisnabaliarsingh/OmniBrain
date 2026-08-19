@@ -126,11 +126,37 @@ def get_document_metadata(db: Session, document_id: int):
             "file_size": document.file_size,
             "status": document.status
         }
+
+    return None
+
+
 def search_documents_by_filename(db: Session, keyword: str):
     return (
         db.query(Document)
         .filter(Document.filename.ilike(f"%{keyword}%"))
         .all()
-    )        
+    )
 
-    return None
+
+# Analytics
+
+def get_document_analytics(db: Session):
+    total = db.query(Document).count()
+
+    processed = (
+        db.query(Document)
+        .filter(Document.status == "Processed")
+        .count()
+    )
+
+    pending = (
+        db.query(Document)
+        .filter(Document.status == "Pending")
+        .count()
+    )
+
+    return {
+        "total": total,
+        "processed": processed,
+        "pending": pending
+    }
