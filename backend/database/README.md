@@ -18,3 +18,20 @@ Stores extracted text chunks from uploaded documents.
 
 ### chat_history
 Stores user questions and AI-generated responses.
+
+## Database Release Checklist
+
+- Database schema implemented
+- SQLAlchemy ORM models implemented
+- Database connection configured
+- CRUD operations implemented
+- Document metadata supported
+- Chat history supported
+- Database indexes configured
+- ORM relationships implemented
+- Chat sessions supported
+- Database queries added
+- SQL agent query interface added
+- Database QA tests added
+- Analytics and reporting functions added
+- Integration exports configured
