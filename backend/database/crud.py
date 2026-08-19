@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 from .models import Document, ChatHistory, ChatSession
 
 
+# Document CRUD
+
 def create_document(db: Session, filename: str, file_size: int, status: str):
     document = Document(
         filename=filename,
@@ -41,44 +43,16 @@ def delete_document(db: Session, document_id: int):
         db.commit()
 
     return document
-    from .models import ChatHistory
 
 
-def create_chat_history(db, document_id, question, answer):
-    history = ChatHistory(
-        document_id=document_id,
-        user_question=question,
-        ai_answer=answer
-    )
+# Chat History CRUD
 
-    db.add(history)
-    db.commit()
-    db.refresh(history)
-
-    return history
-
-
-def get_chat_history(db, document_id):
-    return (
-        db.query(ChatHistory)
-        .filter(ChatHistory.document_id == document_id)
-        .all()
-    )
-
-
-def delete_chat_history(db, history_id):
-    history = (
-        db.query(ChatHistory)
-        .filter(ChatHistory.id == history_id)
-        .first()
-    )
-
-    if history:
-        db.delete(history)
-        db.commit()
-
-    return history
-def create_chat_history(db: Session, document_id: int, question: str, answer: str):
+def create_chat_history(
+    db: Session,
+    document_id: int,
+    question: str,
+    answer: str
+):
     history = ChatHistory(
         document_id=document_id,
         user_question=question,
@@ -110,7 +84,11 @@ def delete_chat_history(db: Session, history_id: int):
         db.commit()
 
     return history
-    def create_chat_session(db: Session, document_id: int):
+
+
+# Chat Session CRUD
+
+def create_chat_session(db: Session, document_id: int):
     session = ChatSession(document_id=document_id)
 
     db.add(session)
@@ -126,8 +104,18 @@ def get_chat_session(db: Session, session_id: str):
         .filter(ChatSession.session_id == session_id)
         .first()
     )
+
+
+# Document Queries
+
 def get_documents_by_status(db: Session, status: str):
-    return db.query(Document).filter(Document.status == status).all()    
+    return (
+        db.query(Document)
+        .filter(Document.status == status)
+        .all()
+    )
+
+
 def get_document_metadata(db: Session, document_id: int):
     document = get_document(db, document_id)
 
@@ -139,4 +127,4 @@ def get_document_metadata(db: Session, document_id: int):
             "status": document.status
         }
 
-    return None    
+    return None
