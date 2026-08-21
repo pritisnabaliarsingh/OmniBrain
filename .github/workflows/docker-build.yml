@@ -1,5 +1,22 @@
-name: Docker Build & Run Verification
 
+      - name: Run Backend Container
+        run: |
+          docker run -d \
+            --name ci-test-container \
+            -p 8000:8000 \
+            -e GEMINI_API_KEY=dummy_key \
+            ci-build:${{ github.sha }}
+
+          sleep 5
+
+          echo "===== GEMINI ENVIRONMENT ====="
+          docker inspect ci-test-container \
+            --format='{{range .Config.Env}}{{println .}}{{end}}' | grep GEMINI || true
+
+          echo "===== SETTINGS.PY INSIDE IMAGE ====="
+          docker run --rm \
+            ci-build:${{ github.sha }} \
+            cat /app/app/config/settings.py || true
 on:
   push:
 
@@ -24,12 +41,13 @@ jobs:
 
       - name: Build Backend Docker Image
         run: |
-          docker build \
-            -t ci-build:${{ github.sha }} \
-            ./backend
+         
 
       - name: Run Backend Container
-        run: |
+        run: |docker build \
+  --no-cache \
+  -t ci-build:${{ github.sha }} \
+  ./backend
           docker run -d \
             --name ci-test-container \
             -p 8000:8000 \
