@@ -1,16 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
 venv/
-__pycache__/
-*.pyc
-document_processing/output/
-.env
-__pycache__/
-*.pyc
-.env
 .venv/
-venv/
-*.db
+
+# Environment / secrets
+.env
+.env.*
+
+# Testing
 .pytest_cache/
+.coverage
+htmlcov/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated document processing
+document_processing/output/
+
+# Uploaded user files
+uploads/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Node
 node_modules/
 
+# Logs
+*.log
+
+# Project-specific
 devOps.md
+
+# Backend runtime uploads
+backend/app/uploads/
+backend/uploads/
+*.backup
+*.bak
+
+backend/app/uploads/
+backend/.git-backup/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
