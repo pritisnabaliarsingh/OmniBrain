@@ -1,22 +1,6 @@
 
-      - name: Run Backend Container
-        run: |
-          docker run -d \
-            --name ci-test-container \
-            -p 8000:8000 \
-            -e GEMINI_API_KEY=dummy_key \
-            ci-build:${{ github.sha }}
+    name: Docker Build & Run Verification
 
-          sleep 5
-
-          echo "===== GEMINI ENVIRONMENT ====="
-          docker inspect ci-test-container \
-            --format='{{range .Config.Env}}{{println .}}{{end}}' | grep GEMINI || true
-
-          echo "===== SETTINGS.PY INSIDE IMAGE ====="
-          docker run --rm \
-            ci-build:${{ github.sha }} \
-            cat /app/app/config/settings.py || true
 on:
   push:
 
@@ -39,22 +23,49 @@ jobs:
             exit 1
           fi
 
+      - name: Verify Gemini Configuration Source
+        run: |
+          echo "===== GIT COMMIT ====="
+          git rev-parse HEAD
+
+          echo "===== SETTINGS.PY ====="
+          cat backend/app/config/settings.py
+
+          echo "===== CHECK OLD GEMINI VALIDATION ====="
+          if grep -q 'raise ValueError("GEMINI_API_KEY is not set")' backend/app/config/settings.py; then
+            echo "ERROR: Old GEMINI_API_KEY validation is still present!"
+            exit 1
+          fi
+
+          echo "GEMINI_API_KEY validation is not present."
+
       - name: Build Backend Docker Image
         run: |
-         
+          docker build \
+            --no-cache \
+            -t ci-build:${{ github.sha }} \
+            ./backend
+
+      - name: Verify Settings Inside Docker Image
+        run: |
+          docker run --rm \
+            -e GEMINI_API_KEY=dummy_key \
+            ci-build:${{ github.sha }} \
+            cat /app/app/config/settings.py
 
       - name: Run Backend Container
-        run: |docker build \
-  --no-cache \
-  -t ci-build:${{ github.sha }} \
-  ./backend
+        run: |
           docker run -d \
             --name ci-test-container \
             -p 8000:8000 \
-            -e GEMINI_API_KEY=test-ci-key \
+            -e GEMINI_API_KEY=dummy_key \
             ci-build:${{ github.sha }}
 
           sleep 5
+
+          echo "===== GEMINI ENVIRONMENT ====="
+          docker inspect ci-test-container \
+            --format='{{range .Config.Env}}{{println .}}{{end}}' | grep GEMINI || true
 
       - name: Check Container Is Running
         run: |
