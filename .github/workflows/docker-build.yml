@@ -1,9 +1,29 @@
+name: Docker Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Verify Backend Dockerfile Exists
         run: |
           if [ ! -f backend/Dockerfile ]; then
             echo "Backend Dockerfile not found!"
             exit 1
           fi
+
+          echo "Backend Dockerfile found."
 
       - name: Verify Gemini Configuration Source
         run: |
