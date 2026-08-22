@@ -50,14 +50,14 @@ jobs:
       - name: Test Gemini Environment
         run: |
           docker run --rm \
-            -e GEMINI_API_KEY=dummy_key \
+            -e GEMINI_API_KEY="${{ secrets.GEMINI_API_KEY }}" \
             ci-build:${{ github.sha }} \
-            python -c "from app.config.settings import GEMINI_API_KEY; print('GEMINI TEST:', GEMINI_API_KEY)"
+            python -c "from app.config.settings import GEMINI_API_KEY; print('GEMINI TEST: configured' if GEMINI_API_KEY else 'GEMINI TEST: missing')"
 
       - name: Test Backend Application Import
         run: |
           docker run --rm \
-            -e GEMINI_API_KEY=dummy_key \
+            -e GEMINI_API_KEY="${{ secrets.GEMINI_API_KEY }}" \
             ci-build:${{ github.sha }} \
             python -c "import app.main; print('APP IMPORT OK')"
 
@@ -66,7 +66,7 @@ jobs:
           docker run -d \
             --name ci-test-container \
             -p 8000:8000 \
-            -e GEMINI_API_KEY=dummy_key \
+            -e GEMINI_API_KEY="${{ secrets.GEMINI_API_KEY }}" \
             ci-build:${{ github.sha }}
 
           sleep 5
