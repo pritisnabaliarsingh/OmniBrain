@@ -1,5 +1,4 @@
-
-    name: Docker Build & Run Verification
+name:Docker Build & Run Verification
 
 on:
   push:
@@ -28,10 +27,10 @@ jobs:
           echo "===== GIT COMMIT ====="
           git rev-parse HEAD
 
-          echo "===== SETTINGS.PY ====="
+          echo "===== SETTINGS.PY FROM CHECKED-OUT SOURCE ====="
           cat backend/app/config/settings.py
 
-          echo "===== CHECK OLD GEMINI VALIDATION ====="
+          echo "===== CHECK FOR OLD GEMINI VALIDATION ====="
           if grep -q 'raise ValueError("GEMINI_API_KEY is not set")' backend/app/config/settings.py; then
             echo "ERROR: Old GEMINI_API_KEY validation is still present!"
             exit 1
